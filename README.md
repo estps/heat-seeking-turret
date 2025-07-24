@@ -46,6 +46,26 @@
 
 ---
 
+## About the ESP32 DevKitC (Turret Controller)
+
+The **ESP32 DevKitC** is recommended as the main controller for the turret (receiver) in this project. It is used to receive ESP-NOW messages, control the OLED display, and handle user input (button). The DevKitC provides easy access to all necessary pins and is compatible with the wiring and code examples provided for the turret.
+
+- The **turret/receiver** should use the ESP32 DevKitC for best compatibility.
+- The **sender/disarm unit** can use any ESP32-C3 board, as it only needs to send a message on reset.
+
+The ESP32 DevKitC features:
+- USB-to-serial interface for easy programming
+- Onboard voltage regulator
+- Breadboard-friendly pin layout
+- Access to all GPIO pins
+
+**Why use the DevKitC for the turret?**
+- It is widely supported, affordable, and easy to use for prototyping.
+- The pin numbers referenced in this project (e.g., GPIO 8, 9, 1, 2) match the DevKitC layout.
+- Other ESP32-C3 boards may work, but pin numbers, available features, or wiring may differ. Always check your board's documentation and adjust the code and wiring as needed.
+
+---
+
 ## About This Project
 
 This repository contains three example scripts for ESP32-C3 microcontrollers, designed to demonstrate a basic wireless human tracking and disarm system using ESP-NOW and an OLED display. The system is not yet fully validated and is intended for experimentation and learning.
@@ -96,14 +116,46 @@ This repository contains three example scripts for ESP32-C3 microcontrollers, de
 ### 3. `main.cpp`
 
 **Purpose:**
-- Simple test script to blink the onboard LED (GPIO 2) every 500ms.
+- Example code for the turret (main controller) using the ESP32 DevKitC.
+- Blinks the onboard LED (GPIO 2) every 500ms (basic test), but in a real turret setup, this board would control the servos and read the MLX90640 thermal camera.
+
+**Intended Hardware (Turret):**
+- ESP32 DevKitC (main controller)
+- MLX90640 thermal camera (I2C)
+- 2x Servo motors (pan and tilt)
+- (Optional) Onboard LED for testing
+
+**Wiring for Turret:**
+- **MLX90640 Thermal Camera:**
+  - VIN → 3.3V (on ESP32 DevKitC)
+  - GND → GND
+  - SDA → GPIO 21
+  - SCL → GPIO 22
+- **Pan Servo:**
+  - VCC → 5V (external power supply recommended)
+  - GND → GND (shared with ESP32)
+  - Signal → GPIO 18
+- **Tilt Servo:**
+  - VCC → 5V (external power supply recommended)
+  - GND → GND (shared with ESP32)
+  - Signal → GPIO 19
+- **Onboard LED:**
+  - Connected to GPIO 2 (already on the DevKitC)
 
 **How it works:**
-- Sets GPIO 2 as output in `setup()`.
-- In `loop()`, toggles the LED on and off with a 500ms delay.
+- The provided `main.cpp` is a simple LED blink test for verifying the ESP32 DevKitC is working.
+- In a full turret implementation, this board would:
+  - Read thermal data from the MLX90640
+  - Process the image to detect humans
+  - Control the pan/tilt servos to track targets
 
-**Hardware:**
-- ESP32-C3
+**Libraries (for full turret code):**
+- `Wire` (I2C communication)
+- `Adafruit_MLX90640` (thermal camera)
+- `ESP32Servo` (servo control)
+
+**Note:**
+- The current `main.cpp` is a placeholder. For turret operation, you will need to implement the logic for reading the MLX90640 and controlling the servos as described above.
 
 ---
 
